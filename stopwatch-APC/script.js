@@ -118,6 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('keydown', e => {
+    // Ignore if user is typing in an input field
+    if (e.target && e.target.tagName === 'INPUT') return
+
+    // Stopwatch shortcuts: s = start, p = pause, r = reset
     if (e.key === 's') {
       const el = document.getElementById('startStopwatch')
       if (el) el.click()
@@ -128,6 +132,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (e.key === 'r') {
       const el = document.getElementById('resetStopwatch')
+      if (el) el.click()
+    }
+
+    // Countdown shortcuts: c = start, x = pause, v = reset
+    if (e.key === 'c') {
+      const el = document.getElementById('startCountdown')
+      if (el) el.click()
+    }
+    if (e.key === 'x') {
+      const el = document.getElementById('pauseCountdown')
+      if (el) el.click()
+    }
+    if (e.key === 'v') {
+      const el = document.getElementById('resetCountdown')
       if (el) el.click()
     }
   })
