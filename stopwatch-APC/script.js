@@ -44,45 +44,64 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  document.getElementById('startCountdown').addEventListener('click', () => {
-    const min = parseInt(document.getElementById('minutesInput').value) || 0
-    const sec = parseInt(document.getElementById('secondsInput').value) || 0
-    if ((min < 0 || sec < 0) || (min === 0 && sec === 0)) return
-    if (!countdownRunning) {
-      if (countdownTime === 0) {
-        countdownTime = min * 60 + sec
-        countdownInitial = countdownTime
-      }
-      countdownRunning = true
-      console.log('Countdown started')
-      countdownInterval = setInterval(() => {
-        countdownTime--
-        countdownDisplay.textContent = formatCountdown(countdownTime)
-        if (countdownTime <= 0) {
-          clearInterval(countdownInterval)
-          countdownRunning = false
-          alert('Countdown reached 00:00!')
-          console.log('Countdown reached 00:00')
-        }
-      }, 1000)
-    }
-  })
+  const startCountdownBtn = document.getElementById('startCountdown')
+  const pauseCountdownBtn = document.getElementById('pauseCountdown')
+  const resetCountdownBtn = document.getElementById('resetCountdown')
+  const minutesInput = document.getElementById('minutesInput')
+  const secondsInput = document.getElementById('secondsInput')
 
-  document.getElementById('pauseCountdown').addEventListener('click', () => {
-    if (countdownRunning) {
+  if (startCountdownBtn) {
+    startCountdownBtn.addEventListener('click', () => {
+      const min = parseInt((minutesInput && minutesInput.value) || 0) || 0
+      const sec = parseInt((secondsInput && secondsInput.value) || 0) || 0
+      if ((min < 0 || sec < 0) || (min === 0 && sec === 0)) return
+      if (!countdownRunning) {
+        if (countdownTime === 0) {
+          countdownTime = min * 60 + sec
+          countdownInitial = countdownTime
+        }
+        countdownRunning = true
+        console.log('Countdown started')
+        countdownInterval = setInterval(() => {
+          countdownTime--
+          if (countdownDisplay) countdownDisplay.textContent = formatCountdown(countdownTime)
+          if (countdownTime <= 0) {
+            clearInterval(countdownInterval)
+            countdownRunning = false
+            alert('Countdown reached 00:00!')
+            console.log('Countdown reached 00:00')
+          }
+        }, 1000)
+      }
+    })
+  }
+
+  if (pauseCountdownBtn) {
+    pauseCountdownBtn.addEventListener('click', () => {
+      if (countdownRunning) {
+        countdownRunning = false
+        clearInterval(countdownInterval)
+        console.log('Countdown paused')
+      }
+    })
+  }
+
+  if (resetCountdownBtn) {
+    resetCountdownBtn.addEventListener('click', () => {
       countdownRunning = false
       clearInterval(countdownInterval)
-      console.log('Countdown paused')
-    }
-  })
-
-  document.getElementById('resetCountdown').addEventListener('click', () => {
-    countdownRunning = false
-    clearInterval(countdownInterval)
-    countdownTime = countdownInitial
-    countdownDisplay.textContent = formatCountdown(countdownInitial)
-    console.log('Countdown reset')
-  })
+      // If countdownInitial is 0 it means countdown was never started; show 00:00 to avoid confusion
+      if (countdownInitial > 0) {
+        countdownTime = countdownInitial
+        if (countdownDisplay) countdownDisplay.textContent = formatCountdown(countdownInitial)
+        console.log('Countdown reset to initial value')
+      } else {
+        countdownTime = 0
+        if (countdownDisplay) countdownDisplay.textContent = '00:00'
+        console.log('Countdown reset (no initial value) — display set to 00:00')
+      }
+    })
+  }
 
   function formatTime(time) {
     const h = String(Math.floor(time / 3600)).padStart(2, '0')
